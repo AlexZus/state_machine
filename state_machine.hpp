@@ -12,12 +12,13 @@
 #include "data_container.hpp"
 
 class StateMachine;
-typedef void (StateMachine::*ActionFunc)(DataContainer *);
+typedef void (StateMachine::*ActionFunc)(tPDC);
 typedef unsigned char tState;
 
 #define SMA(ACTION_METHOD) \
-	reinterpret_cast<ActionFunc>(&thisCls::ACTION_METHOD)
-#define DCP DataContainer* pData
+	reinterpret_cast<ActionFunc>(\
+	&thisCls::ACTION_METHOD)
+#define DCP tPDC pDC
 
 struct ActionCore
 {
@@ -70,11 +71,11 @@ public:
 
 	bool isCanAct(tDataType dataType);
 
-	bool doAction(DataContainer* data);
+	bool doAction(tPDC data);
 
 	bool doAction(tDataType dataType);
 
-	void act_nothing(DataContainer* pData) {};
+	void act_nothing(tPDC pData) {};
 
 protected:
 	void process();
@@ -87,7 +88,7 @@ protected:
 
 	void initStateMap(StateMapCreator& stateMapCreator);
 
-	void internalAction(ActionCore actionCore, DataContainer* data = nullptr);
+	void internalAction(ActionCore actionCore, tPDC data = nullptr);
 
 	void trigToState(tState newState);
 
@@ -96,7 +97,7 @@ protected:
 
 private:
 	bool isEvent = false;
-	DataContainer* eventData;
+	tPDC eventData;
 	ActionCore eventActionCore;
 	std::unordered_map<tDataType, ActionCore*> stateMap;
 	tState statesNum;

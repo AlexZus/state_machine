@@ -129,20 +129,14 @@ bool StateMachine::isCanAct(tDataType dataType)
 	return stateMap.find(dataType) != stateMap.end();
 }
 
-bool StateMachine::doAction(DataContainer* data)
+bool StateMachine::doAction(tPDC data)
 {
 	ActionCore actionCore = stateMap.at(data->getType())[currentState];
 	if (actionCore.resultState == currentState &&
 		actionCore.actionFunc == &StateMachine::act_nothing)
 	{
-		if (data != nullptr && data->isOwner(this))
-		{
-			delete data;
-		}
 		return false;
 	}
-	if ( ! data->isHasOwner() )
-		data->setOwner(this);
 	internalAction(actionCore, data);
 	process();
 	return true;
@@ -163,7 +157,7 @@ bool StateMachine::doAction(tDataType dataType)
 
 void StateMachine::process()
 {
-	DataContainer* pDataTemp = nullptr;
+	tPDC pDataTemp = nullptr;
 	while (isEvent)
 	{
 		pDataTemp = eventData;
@@ -173,11 +167,6 @@ void StateMachine::process()
 		auto newState = eventActionCore.resultState;
 		(this->*eventActionCore.actionFunc)(pDataTemp);
 		currentState = newState;
-
-		if (pDataTemp != nullptr && pDataTemp->isOwner(this))
-		{
-			delete pDataTemp;
-		}
 	}
 }
 
@@ -187,7 +176,7 @@ void StateMachine::initStateMap(StateMapCreator& stateMapCreator)
 	statesNum = stateMapCreator.statesNum;
 }
 
-void StateMachine::internalAction(ActionCore actionCore, DataContainer* data)
+void StateMachine::internalAction(ActionCore actionCore, tPDC data)
 {
 	isEvent = true;
 	eventData = data;

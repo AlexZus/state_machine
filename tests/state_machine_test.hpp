@@ -22,13 +22,13 @@ namespace StateMachineTest
 	{
 		StateMachineTestInterface()
 		{
-			setData = [](DC_Set *pData)
+			setData = [](std::shared_ptr<DC_Set> pData)
 			{};
 			flush = []()
 			{ return false; };
 		}
 
-		std::function<void(DC_Set *pData)> setData;
+		std::function<void(std::shared_ptr<DC_Set> pData)> setData;
 		std::function<bool()> flush;
 	};
 
@@ -119,7 +119,7 @@ namespace StateMachineTest
 			smc.add(ST_CRASHED);
 			initStateMap(smc);
 
-			thisInterface.setData = [this](DC_Set *pData)
+			thisInterface.setData = [this](std::shared_ptr<DC_Set> pData)
 				{ this->doAction(pData); };
 		};
 
@@ -142,7 +142,7 @@ namespace StateMachineTest
 
 		void doSet(int A)
 		{
-			doAction(new DC_Set(A));
+			doAction(std::make_shared<DC_Set>(A));
 		}
 
 		const tState getState()
@@ -157,7 +157,7 @@ namespace StateMachineTest
 			data = nullptr;
 		}
 
-		void act_start(DC_Start *pData)
+		void act_start(std::shared_ptr<DC_Start> pData)
 		{
 			if (pData != nullptr)
 				outInterface = pData->testInterface;
@@ -181,14 +181,14 @@ namespace StateMachineTest
 			freeData();
 		}
 
-		void act_set(DC_Set *pData)
+		void act_set(std::shared_ptr<DC_Set> pData)
 		{
 			*data = pData->A;
 		}
 
 		void act_send(DCP)
 		{
-			outInterface->setData(new DC_Set(*data));
+			outInterface->setData(std::make_shared<DC_Set>(*data));
 		}
 
 		void act_crash(DCP)
@@ -201,7 +201,7 @@ namespace StateMachineTest
 			*data = 100;
 		}
 
-		void act_common(DataContainer *pDC)
+		void act_common(tPDC pDC)
 		{
 			if (pDC->getType() == DCID(DC_Common1))
 				*data = 301;

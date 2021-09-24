@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <string>
 #include <limits>
+#include <memory>
 #include "basics.h"
 
 /// get Data Container type ID with initialization
@@ -16,7 +17,7 @@
 #define DCID(X) DataContainer::getDCtypeID<X>()
 /// Data Container User Method
 #define DCUM(ACTION_METHOD) \
-	reinterpret_cast<void (thisCls::*)(DataContainer&)>(\
+	reinterpret_cast<void (thisCls::*)(tPDC)>(\
 					&thisCls::ACTION_METHOD)
 
 #define DEFINE_clsName(value) \
@@ -94,27 +95,12 @@ public:
 		return getDCtypeID<DC>();
 	}
 
-	void setOwner(void *owner)
-	{
-		this->owner = owner;
-	}
-
-	bool isHasOwner()
-	{
-		return owner != nullptr;
-	}
-
-	bool isOwner(void *test)
-	{
-		return owner == test;
-	}
-
 protected:
 	tDataType type;
 
 	static std::unordered_map<std::string, tDataType> types;
-
-	void *owner = nullptr;
 };
+
+typedef std::shared_ptr<DataContainer> tPDC;
 
 #endif //_DATA_CONTAINER_H

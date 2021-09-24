@@ -15,16 +15,16 @@ BOOST_AUTO_TEST_SUITE(utest_state_machine)
 		StateMachineTester B;
 		BOOST_CHECK_MESSAGE(A.getState() == 0, "A state 0");
 		BOOST_CHECK_MESSAGE(B.getState() == 0, "B state 0");
-		A.doAction(new DC_Start(B.getInterface()));
+		A.doAction(std::make_shared<DC_Start>(B.getInterface()));
 		BOOST_CHECK_MESSAGE(A.getState() == 1, "A state 1");
-		B.doAction(new DC_Start(A.getInterface()));
+		B.doAction(std::make_shared<DC_Start>(A.getInterface()));
 		BOOST_CHECK_MESSAGE(B.getState() == 1, "B state 1");
 		BOOST_CHECK_MESSAGE(A.getData() == 10, "A 10");
 		BOOST_CHECK_MESSAGE(B.getData() == 10, "B 10");
 
-		A.doAction(new DC_Common1());
+		A.doAction(std::make_shared<DC_Common1>());
 		BOOST_CHECK_MESSAGE(A.getData() == 301, "DC_Common1");
-		A.doAction(new DC_Common2());
+		A.doAction(std::make_shared<DC_Common2>());
 		BOOST_CHECK_MESSAGE(A.getData() == 302, "DC_Common2");
 
 		A.doSet(7);
@@ -39,10 +39,7 @@ BOOST_AUTO_TEST_SUITE(utest_state_machine)
 		B.doAction(DCID(DC_Crash));
 		BOOST_CHECK_MESSAGE(B.getState() == 2, "B state 2");
 		BOOST_CHECK_MESSAGE(B.getData() == 100, "B 100");
-		DC_Start *pDC_Start = new DC_Start();
-		pDC_Start->setOwner(this);
-		B.doAction(pDC_Start);
-		delete pDC_Start;
+		B.doAction(std::make_shared<DC_Start>());
 		BOOST_CHECK_MESSAGE(B.getState() == 1, "B state 1");
 		BOOST_CHECK_MESSAGE(B.getData() == 10, "B 100");
 
